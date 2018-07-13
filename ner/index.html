@@ -199,24 +199,24 @@ var timeScale = "0";
 var firstOverflow = true;
 
 function init() {
-    var jsonFile = new URI().search(true).json;
-  	setTimescaleText(timeScale);
+  var jsonFile = new URI().search(true).json;
+	setTimescaleText(timeScale);
 
-    if (!jsonFile) {
-    	d3.select("#no-parameters").style("display", "block");
+  if (!jsonFile) {
+  	d3.select("#no-parameters").style("display", "block");
 
-    } else {
-    	d3.select("#data-select").style("display", "block");
-        d3.select("#json-source").html("Data source: <a href='" + jsonFile + "'>" + jsonFile + "</a>")
-        d3.select("#list-msg").style("opacity", .9).style("visibility", "visible");
+  } else {
+    d3.select("#data-select").style("display", "block");
+    d3.select("#json-source").html("Data source: <a href='" + jsonFile + "'>" + jsonFile + "</a>");
+    d3.select("#list-msg").style("opacity", .9).style("visibility", "visible");
 
-        // Load data
-        d3.json(jsonFile, function(error, json) {
-        	if (error) {
-        		d3.select("#list-msg").text("Error loading data");
-        		throw error;
-        	} else {
-				d3.select("#list-msg").style("opacity",0);
+    // Load data
+    d3.json(jsonFile, function(error, json) {
+      if (error) {
+        d3.select("#list-msg").text("Error loading data");
+        throw error;
+      } else {
+        d3.select("#list-msg").style("opacity",0);
         allData =  explodeNerObjs(json);
         /** JSON FORMAT:
         [{
@@ -315,39 +315,39 @@ function init() {
             pct = parseFloat(momentDates[i].diff(minMomentDate, 'days')/maxMomentDate.diff(minMomentDate, 'days') * 100).toFixed(2);
             sliderRange[pct+'%'] = date;
           }
-        })
-				// Create slider
-				var slider = d3.select("#date-range-slider").node();
-				noUiSlider.create(slider, {
-					range: sliderRange,
-					snap: true,
-					connect: true,
-					start: [minDate, maxDate],
-					format: {   // Otherwise uses default float format
-						to: function(v) { return v; },
-						from: function(v) { return v; }
-					}
-				});
-				var snapValues = [
-					d3.select('#date-range-lower').node(),
-					d3.select('#date-range-upper').node()
-				];
-				slider.noUiSlider.on('update', function(values, handle) {
-					snapValues[handle].innerHTML = values[handle];
-				});
-				slider.noUiSlider.on('change', function(values) {
-					nestedData = nestData(allData, timeScale);
-					visualize(entityType, timeScale);
-				});
-
-				// Prepare data
-				nestedData = nestData(allData, timeScale);
-
-				// Do initial visualization
-				updateEntityType("PERSON");  // calls visualize()
-			}
         });
-    }
+        // Create slider
+        var slider = d3.select("#date-range-slider").node();
+        noUiSlider.create(slider, {
+          range: sliderRange,
+          snap: true,
+          connect: true,
+          start: [minDate, maxDate],
+          format: {   // Otherwise uses default float format
+            to: function(v) { return v; },
+            from: function(v) { return v; }
+          }
+        });
+        var snapValues = [
+          d3.select('#date-range-lower').node(),
+          d3.select('#date-range-upper').node()
+        ];
+        slider.noUiSlider.on('update', function(values, handle) {
+          snapValues[handle].innerHTML = values[handle];
+        });
+        slider.noUiSlider.on('change', function(values) {
+          nestedData = nestData(allData, timeScale);
+          visualize(entityType, timeScale);
+        });
+
+        // Prepare data
+        nestedData = nestData(allData, timeScale);
+
+        // Do initial visualization
+        updateEntityType("PERSON");  // calls visualize()
+      }
+    });
+  }
 }
 
 function explodeNerObjs(data) {
